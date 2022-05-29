@@ -1,5 +1,16 @@
 #include <stdio.h>
-
+void sign_in ()
+{
+    char name[50] ;
+    char address[50];
+    int phonenor;
+    int password;
+    printf("Enter your name,address,phonenor,passowrd\n");
+    scanf("%s",&name);
+    scanf("%s",&address);
+    scanf("%d",&phonenor);
+    scanf("%d",&password);
+}
 int main()
 {
     printf("=============== Welcome to N.P. Banking Services ===============");
@@ -13,6 +24,7 @@ int main()
         {
         case 1:
             printf("Sign-In\n");
+            sign_in();
             break;
         case 2:
             printf("Sign-Up\n");
