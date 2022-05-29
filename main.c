@@ -36,4 +36,5 @@ int main()
         }
     }
     return 0;
+    printf("%c",name); //can we access those values here ?
 }
