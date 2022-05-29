@@ -1,5 +1,5 @@
 #include <stdio.h>
-void sign_in ()
+void sign_up ()
 {
     char name[50] ;
     char address[50];
@@ -24,10 +24,10 @@ int main()
         {
         case 1:
             printf("Sign-In\n");
-            sign_in();
             break;
         case 2:
             printf("Sign-Up\n");
+            sign_up();
             break;
         default:
             flag=0;
