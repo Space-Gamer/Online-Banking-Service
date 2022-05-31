@@ -1,6 +1,26 @@
 #include <stdio.h>
+#include <time.h>
+#include <stdlib.h>
 
-int login(){ //fn1
+struct details
+{
+    long int acc_no;
+    char name[100];
+    char passwd[100];
+    char email[100];  
+};
+
+struct trans
+{
+    int trno;//Personal transaction number
+    char tstr[100];//timesting
+    char desc[200];//Description
+    float tramt;//transaction amount
+    float bal;//balance after transaction
+};
+
+int login()
+{ //fn1
     int i1=0;
     char usrn[100],pass[100];
     for (i1;i1<3;i1++)
@@ -18,6 +38,20 @@ int login(){ //fn1
     }
     printf("Too many invalid attempts. Try again later!\n");
     return -1;
+}
+
+void sign_up ()
+{
+    struct details u1;
+    //char pass1,pass2;
+    //Generate next Acc_No.
+    printf("Enter your name: ");
+    scanf("%s",&u1.name);
+    printf("Enter your email address: ");
+    scanf("%s",&u1.email);
+    printf("Enter password: ");
+    scanf("%s",&u1.passwd); //Re-enter passwd if needed
+    //Append data to file.
 }
 
 int main()
@@ -41,6 +75,7 @@ int main()
             break;
         case 2:
             printf("Sign-Up\n");
+            sign_up();
             break;
         default:
             flag=0;
