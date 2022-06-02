@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct details
 {
@@ -22,14 +23,14 @@ struct trans
 int login()
 { //fn1
     int i1=0;
-    char usrn[100],pass[100];
+    char usrn[100],pass[100],temp[100]="Hello";
     for (i1;i1<3;i1++)
     {
         printf("\nEnter username: ");
         scanf("%s",usrn);
         printf("\nEnter password: ");
         scanf("%s",pass);
-        if (usrn[0]=='0'){//Verifying step
+        if (!strcmp(pass,temp)){//Verifying step
             printf("\nSuccess!");
             return 0;
         }
@@ -43,15 +44,20 @@ int login()
 void sign_up ()
 {
     struct details u1;
-    //char pass1,pass2;
-    //Generate next Acc_No.
+    FILE *fptr;
+    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","a+");
+    fseek(fptr, -7, SEEK_END); //Read next account number
+    fscanf(fptr,"%d", &u1.acc_no);
     printf("Enter your name: ");
     scanf("%s",&u1.name);
     printf("Enter your email address: ");
     scanf("%s",&u1.email);
     printf("Enter password: ");
     scanf("%s",&u1.passwd); //Re-enter passwd if needed
-    //Append data to file.
+    fprintf(fptr, ",%s,%s,%s\n%ld", u1.name, u1.email, u1.passwd, u1.acc_no+1);//Append data to file.
+    printf("Account created successfully!\n");
+    printf("Your account number is: %d\n",u1.acc_no);
+    fclose(fptr);
 }
 
 int main()
