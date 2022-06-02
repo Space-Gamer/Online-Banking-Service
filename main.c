@@ -20,22 +20,56 @@ struct trans
     float bal;//balance after transaction
 };
 
+int logchk(char *usr, char *pass)
+{
+    FILE *fptr;
+    long int acc_no;
+    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","r");
+    fseek(fptr, -7, SEEK_END);
+    fscanf(fptr,"%ld", &acc_no);//Last non-existent account number
+    long int a;//Current account number
+    char u[100],e[100],p[100];
+    fseek(fptr, 0, SEEK_SET);
+    fscanf(fptr,"%ld",&a);
+    while (a!=acc_no)
+    {
+        fscanf(fptr, ",%[^,],%[^,],%s", u, e, p);
+        if (!strcmp(usr,u))
+        {
+            if (!strcmp(pass,p))
+            return 0;//Correct password
+            else
+            return 1;//Wrong password
+        }
+        fscanf(fptr,"%ld",&a);
+    };
+    fclose(fptr);
+    return -1;//Username not found
+}
+
 int login()
 { //fn1
     int i1=0;
     char usrn[100],pass[100],temp[100]="Hello";
-    for (i1;i1<3;i1++)
+    for (i1;i1<3;i1++) //Three chances for wrong password.
     {
         printf("\nEnter username: ");
         scanf("%s",usrn);
         printf("\nEnter password: ");
         scanf("%s",pass);
-        if (!strcmp(pass,temp)){//Verifying step
+        int status;
+        status = logchk(usrn, pass);
+        if (status == 0){//Verifying step
             printf("\nSuccess!");
             return 0;
         }
+        else if (status == 1)
+        printf("Wrong password!\n");
         else
-        printf("Wrong username or password!\n");
+        {
+            printf("Account with name '%s' doesn't exist. Sign-Up to create one!\n",usrn);
+            return -1;
+        }
     }
     printf("Too many invalid attempts. Try again later!\n");
     return -1;
@@ -47,7 +81,7 @@ void sign_up ()
     FILE *fptr;
     fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","a+");
     fseek(fptr, -7, SEEK_END); //Read next account number
-    fscanf(fptr,"%d", &u1.acc_no);
+    fscanf(fptr,"%ld", &u1.acc_no);
     printf("Enter your name: ");
     scanf("%s",&u1.name);
     printf("Enter your email address: ");
@@ -56,7 +90,7 @@ void sign_up ()
     scanf("%s",&u1.passwd); //Re-enter passwd if needed
     fprintf(fptr, ",%s,%s,%s\n%ld", u1.name, u1.email, u1.passwd, u1.acc_no+1);//Append data to file.
     printf("Account created successfully!\n");
-    printf("Your account number is: %d\n",u1.acc_no);
+    printf("Your account number is: %ld\n",u1.acc_no);
     fclose(fptr);
 }
 
