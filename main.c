@@ -50,7 +50,7 @@ int logchk(char *usr, char *pass)
 int login()
 { //fn1
     int i1=0;
-    char usrn[100],pass[100],temp[100]="Hello";
+    char usrn[100],pass[100];
     for (i1;i1<3;i1++) //Three chances for wrong password.
     {
         printf("\nEnter username: ");
@@ -78,7 +78,7 @@ int login()
 void sign_up ()
 {
     struct details u1;
-    FILE *fptr;
+    FILE *fptr,*fptr2;
     fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","a+");
     fseek(fptr, -7, SEEK_END); //Read next account number
     fscanf(fptr,"%ld", &u1.acc_no);
@@ -88,10 +88,24 @@ void sign_up ()
     scanf("%s",&u1.email);
     printf("Enter password: ");
     scanf("%s",&u1.passwd); //Re-enter passwd if needed
+    int stat;
+    stat = logchk(u1.name, u1.passwd);
+    if (!(stat==-1))
+    {
+        printf("Username '%s' already exists! Kindly login to access.\n",u1.name);
+        fclose(fptr);
+        return;
+    }
     fprintf(fptr, ",%s,%s,%s\n%ld", u1.name, u1.email, u1.passwd, u1.acc_no+1);//Append data to file.
     printf("Account created successfully!\n");
     printf("Your account number is: %ld\n",u1.acc_no);
+    char fname[110]="";
+    strcat(fname,u1.name);
+    strcat(fname,"_trs.txt");
+    fptr2 = fopen(fname,"a+");
+    fprintf(fptr2, "001,Initial Deposit,10000,10000\n002");//TRID,Desc,Transaction_amt,Balance
     fclose(fptr);
+    fclose(fptr2);
 }
 
 int main()

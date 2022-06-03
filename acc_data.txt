@@ -1,6 +1,2 @@
-8424000,Test,test@gmail.com,TEST@1234
-8424001,Test2,test2@gmail.com,TEST@12345
-8424002,Test3,test3@gmail.com,Test@123456
-8424003,Ram,ram@gmail.com,RAMRAM
-8424004,Testing,test@gmail.com,testing
-8424005
+8424000,Test,test@gmail.com,TEST@123
+8424001
