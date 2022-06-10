@@ -20,6 +20,15 @@ struct trans
     float bal;//balance after transaction
 };
 
+void cur_time(char *ts)
+{
+    struct tm* ptr;
+    time_t t = time(NULL);
+    ptr = gmtime(&t);
+    strftime(ts,100,"%d-%m-%Y-%H:%M:%S",ptr);
+    printf("%s\n",ts);
+}
+
 int logchk(char *usr, char *pass)
 {
     FILE *fptr;
@@ -96,6 +105,8 @@ void sign_up ()
         fclose(fptr);
         return;
     }
+    char dstr[100]="";
+    cur_time(dstr);
     fprintf(fptr, ",%s,%s,%s\n%ld", u1.name, u1.email, u1.passwd, u1.acc_no+1);//Append data to file.
     printf("Account created successfully!\n");
     printf("Your account number is: %ld\n",u1.acc_no);
@@ -103,7 +114,7 @@ void sign_up ()
     strcat(fname,u1.name);
     strcat(fname,"_trs.txt");
     fptr2 = fopen(fname,"a+");
-    fprintf(fptr2, "001,Initial Deposit,10000,10000\n002");//TRID,Desc,Transaction_amt,Balance
+    fprintf(fptr2, "001,%s,Initial Deposit,10000,10000\n002",dstr);//TRID,Desc,Transaction_amt,Balance
     fclose(fptr);
     fclose(fptr2);
 }

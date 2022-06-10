@@ -1,2 +1,2 @@
-8424000,Test,test@gmail.com,TEST@123
+8424000,Tetris,tetris@gmail.com,TET123
 8424001
