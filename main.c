@@ -29,7 +29,7 @@ void cur_time(char *ts)
     printf("%s\n",ts);
 }
 
-int logchk(char *usr, char *pass)
+int logchk(char *usr, char *pass, struct details *det)
 {
     FILE *fptr;
     long int acc_no;
@@ -46,7 +46,13 @@ int logchk(char *usr, char *pass)
         if (!strcmp(usr,u))
         {
             if (!strcmp(pass,p))
-            return 0;//Correct password
+            {
+                det->acc_no = a;
+                strcpy(det->name,u);
+                strcpy(det->email,e);
+                strcpy(det->passwd,p);
+                return 0;//Correct password
+            }
             else
             return 1;//Wrong password
         }
@@ -56,7 +62,7 @@ int logchk(char *usr, char *pass)
     return -1;//Username not found
 }
 
-int login()
+int login(struct details *det)
 { //fn1
     int i1=0;
     char usrn[100],pass[100];
@@ -67,7 +73,7 @@ int login()
         printf("\nEnter password: ");
         scanf("%s",pass);
         int status;
-        status = logchk(usrn, pass);
+        status = logchk(usrn, pass, det);
         if (status == 0){//Verifying step
             printf("\nSuccess!");
             return 0;
@@ -98,7 +104,7 @@ void sign_up ()
     printf("Enter password: ");
     scanf("%s",&u1.passwd); //Re-enter passwd if needed
     int stat;
-    stat = logchk(u1.name, u1.passwd);
+    stat = logchk(u1.name, u1.passwd, &u1);
     if (!(stat==-1))
     {
         printf("Username '%s' already exists! Kindly login to access.\n",u1.name);
@@ -114,7 +120,7 @@ void sign_up ()
     strcat(fname,u1.name);
     strcat(fname,"_trs.txt");
     fptr2 = fopen(fname,"a+");
-    fprintf(fptr2, "001,%s,Initial Deposit,10000,10000\n002",dstr);//TRID,Desc,Transaction_amt,Balance
+    fprintf(fptr2, "001,%s,Initial Deposit,10000,10000\n002",dstr);//TRID,date_string,Desc,Transaction_amt,Balance
     fclose(fptr);
     fclose(fptr2);
 }
@@ -122,7 +128,8 @@ void sign_up ()
 int main()
 {
     printf("=============== Welcome to N.P. Banking Services ===============");
-    int flag=1;
+    int flag=1,log=0;
+    struct details det;
     while (flag)
     {
         printf("\n1. Log-In\n2. Sign-Up\n3. Exit\nEnter your choice(integer only): ");
@@ -133,9 +140,12 @@ int main()
         case 1:
             printf("Log-In\n");
             int resp1;
-            resp1 = login();
-            if (resp1==0){
-                printf("Successfully logged in!");//next menu
+            resp1 = login(&det);
+            if (resp1==0)
+            {
+                log = 1;
+                printf("Successfully logged in!\n");
+                printf("============== Welcome %s =============",det.name);
             }
             break;
         case 2:
@@ -146,6 +156,22 @@ int main()
             flag=0;
             printf("Thank you for using our service. Good Day!");
             break;
+        }
+        while (log==1)
+        {
+            printf("\n1. Check your account balance\n2. View your transactions\n3. Exit\nEnter your choice(integer only): ");
+            int ch2=0;
+            scanf("%d",&ch2);
+            switch(ch2)
+            {
+                case 1:
+                    printf("Balance\n");
+                    break;
+                default:
+                    log = 0;
+                    printf("Logged out!\n");
+                    break;
+            }
         }
     }
     return 0;
