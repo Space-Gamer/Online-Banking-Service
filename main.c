@@ -62,6 +62,36 @@ int logchk(char *usr, char *pass, struct details *det)
     return -1;//Username not found
 }
 
+int gettrans(char uname[], struct trans *tar)
+{
+    FILE *fptr;
+    char fname[] = "";
+    strcat(fname,uname);
+    strcat(fname,"_trs.txt");
+    fptr = fopen(fname, "r");
+    fseek(fptr, -3, SEEK_END);
+    int ctr,ltr; //Current, Last transcation number
+    fscanf(fptr,"%d",&ltr);
+    rewind(fptr);
+    fscanf(fptr,"%d",&ctr);
+    while(ctr < ltr)
+    {
+        tar[ctr-1].trno = ctr;
+        fscanf(fptr, ",%[^,],%[^,],%f,%f\n", tar[ctr-1].tstr, tar[ctr-1].desc, &tar[ctr-1].tramt, &tar[ctr-1].bal);
+        //printf("%ld %s %s %f %f",tar[ctr-1].trno, tar[ctr-1].tstr, tar[ctr-1].desc, tar[ctr-1].tramt, tar[ctr-1].bal);
+        fscanf(fptr,"%d",&ctr);
+    }
+    fclose(fptr);
+    return ltr-1;
+}
+
+float balance(char uname[], struct trans *tar)
+{
+    int n;
+    n = gettrans(uname, tar);
+    return tar[n-1].bal;
+}
+
 int login(struct details *det)
 { //fn1
     int i1=0;
@@ -161,11 +191,22 @@ int main()
         {
             printf("\n1. Check your account balance\n2. View your transactions\n3. Exit\nEnter your choice(integer only): ");
             int ch2=0;
+            int arsz; // Array Size
+            struct trans tar[100];
+
             scanf("%d",&ch2);
             switch(ch2)
             {
                 case 1:
-                    printf("Balance\n");
+                    printf("Your balance is: %.2f Rupees\n",balance(det.name, tar));
+                    break;
+                case 2:
+                    arsz = gettrans(det.name, tar);
+                    int it=0;
+                    for (it=0;it<arsz;it++)
+                    {
+                        printf("|%ld | %s | %s | %.2f | %.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
+                    }
                     break;
                 default:
                     log = 0;
