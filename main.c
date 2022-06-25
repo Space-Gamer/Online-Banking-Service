@@ -195,6 +195,7 @@ int main()
             struct trans tar[100];
 
             scanf("%d",&ch2);
+            char line[] = "---------------------------------------------------------------------------------------\n";
             switch(ch2)
             {
                 case 1:
@@ -203,10 +204,14 @@ int main()
                 case 2:
                     arsz = gettrans(det.name, tar);
                     int it=0;
+                    printf("%s",line);
+                    printf("|TrNo.|    Date-Time-UTC    |           Description          |   Tr.Amt   |  Balance  |\n");
+                    printf("%s",line);
                     for (it=0;it<arsz;it++)
                     {
-                        printf("|%ld | %s | %s | %.2f | %.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
+                        printf("|%4ld | %19s | %30s | %10.2f | %10.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
                     }
+                    printf("%s",line);
                     break;
                 default:
                     log = 0;
