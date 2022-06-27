@@ -26,40 +26,7 @@ void cur_time(char *ts)
     time_t t = time(NULL);
     ptr = gmtime(&t);
     strftime(ts,100,"%d-%m-%Y-%H:%M:%S",ptr);
-    printf("%s\n",ts);
-}
-
-int logchk(char *usr, char *pass, struct details *det)
-{
-    FILE *fptr;
-    long int acc_no;
-    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","r");
-    fseek(fptr, -7, SEEK_END);
-    fscanf(fptr,"%ld", &acc_no);//Last non-existent account number
-    long int a;//Current account number
-    char u[100],e[100],p[100];
-    fseek(fptr, 0, SEEK_SET);
-    fscanf(fptr,"%ld",&a);
-    while (a!=acc_no)
-    {
-        fscanf(fptr, ",%[^,],%[^,],%s", u, e, p);
-        if (!strcmp(usr,u))
-        {
-            if (!strcmp(pass,p))
-            {
-                det->acc_no = a;
-                strcpy(det->name,u);
-                strcpy(det->email,e);
-                strcpy(det->passwd,p);
-                return 0;//Correct password
-            }
-            else
-            return 1;//Wrong password
-        }
-        fscanf(fptr,"%ld",&a);
-    };
-    fclose(fptr);
-    return -1;//Username not found
+    // printf("%s\n",ts);
 }
 
 int gettrans(char uname[], struct trans *tar)
@@ -78,18 +45,93 @@ int gettrans(char uname[], struct trans *tar)
     {
         tar[ctr-1].trno = ctr;
         fscanf(fptr, ",%[^,],%[^,],%f,%f\n", tar[ctr-1].tstr, tar[ctr-1].desc, &tar[ctr-1].tramt, &tar[ctr-1].bal);
-        //printf("%ld %s %s %f %f",tar[ctr-1].trno, tar[ctr-1].tstr, tar[ctr-1].desc, tar[ctr-1].tramt, tar[ctr-1].bal);
         fscanf(fptr,"%d",&ctr);
     }
     fclose(fptr);
     return ltr-1;
 }
 
-float balance(char uname[], struct trans *tar)
+float balance(char uname[])
 {
+    struct trans tar[100];
     int n;
     n = gettrans(uname, tar);
     return tar[n-1].bal;
+}
+
+int withdraw(char uname[], float amt, char desc[])
+{
+    float bal = balance(uname);
+    if (bal<amt)
+    {
+        printf("Insufficient balance in your account!\n");
+        return -1;
+    }
+    FILE *fptr;
+    char fname[50] = "";
+    strcat(fname,uname);
+    strcat(fname,"_trs.txt");
+    fptr = fopen(fname, "a+");
+    fseek(fptr, -3, SEEK_END);
+    int ltr; //Current, Last transcation number
+    fscanf(fptr,"%d",&ltr);
+    char dstr[50]="";
+    cur_time(dstr);
+    fprintf(fptr,",%s,%s,%.2f,%.2f\n%03d",dstr,desc,-1*amt,bal-amt,ltr+1);
+    fclose(fptr);
+    return 0;
+}
+
+int deposit(char uname[], float amt, char desc[])
+{
+    float bal = balance(uname);
+    FILE *fptr;
+    char fname[50] = "";
+    strcat(fname,uname);
+    strcat(fname,"_trs.txt");
+    fptr = fopen(fname, "a+");
+    fseek(fptr, -3, SEEK_END);
+    int ltr; //Current, Last transcation number
+    fscanf(fptr,"%d",&ltr);
+    fseek(fptr,0,SEEK_END);
+    char dstr[100]="";
+    cur_time(dstr);
+    fprintf(fptr,",%s,%s,%.2f,%.2f\n%03d",dstr,desc,amt,bal+amt,ltr+1);
+    fclose(fptr);
+    return 0;
+}
+
+int logchk(char *usr, char *pass, struct details *det)
+{
+    FILE *fptr;
+    long int acc_no;
+    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","r");
+    fseek(fptr, -7, SEEK_END);
+    fscanf(fptr,"%ld", &acc_no);//Last non-existent account number
+    long int a;//Current account number
+    char u[100],e[100],p[100];
+    fseek(fptr, 0, SEEK_SET);
+    fscanf(fptr,"%ld",&a);
+    while (a!=acc_no)
+    {
+        fscanf(fptr, ",%[^,],%[^,],%s", u, e, p);
+        if (!strcmp(usr,u))
+        {
+            det->acc_no = a;
+            if (!strcmp(pass,p))
+            {
+                strcpy(det->name,u);
+                strcpy(det->email,e);
+                strcpy(det->passwd,p);
+                return 0;//Correct password
+            }
+            else
+            return 1;//Wrong password
+        }
+        fscanf(fptr,"%ld",&a);
+    };
+    fclose(fptr);
+    return -1;//Username not found
 }
 
 int login(struct details *det)
@@ -160,6 +202,7 @@ int main()
     printf("=============== Welcome to N.P. Banking Services ===============");
     int flag=1,log=0;
     struct details det;
+    char border[] = "=======================================================================================\n";
     while (flag)
     {
         printf("\n1. Log-In\n2. Sign-Up\n3. Exit\nEnter your choice(integer only): ");
@@ -175,7 +218,7 @@ int main()
             {
                 log = 1;
                 printf("Successfully logged in!\n");
-                printf("============== Welcome %s =============",det.name);
+                printf("=============================== Welcome %s ======================================\n",det.name);
             }
             break;
         case 2:
@@ -189,17 +232,18 @@ int main()
         }
         while (log==1)
         {
-            printf("\n1. Check your account balance\n2. View your transactions\n3. Exit\nEnter your choice(integer only): ");
+            printf("\n1. Check your account balance\n2. View your transactions\n3. Money Transfer\n4. Exit\nEnter your choice(integer only): ");
             int ch2=0;
             int arsz; // Array Size
             struct trans tar[100];
+            float amount; // Transaction amount for money transfer
 
             scanf("%d",&ch2);
             char line[] = "---------------------------------------------------------------------------------------\n";
             switch(ch2)
             {
                 case 1:
-                    printf("Your balance is: %.2f Rupees\n",balance(det.name, tar));
+                    printf("Your balance is: %.2f Rupees\n",balance(det.name));
                     break;
                 case 2:
                     arsz = gettrans(det.name, tar);
@@ -213,11 +257,54 @@ int main()
                     }
                     printf("%s",line);
                     break;
+                case 3:
+                    printf("===================== MONEY TRANSFER ====================\n");
+                    struct details det2;
+                    long int accno2;
+                    printf("Enter account number to which amount must be transferred: ");
+                    scanf("%ld",&accno2);
+                    printf("Enter name of account to which amount must be transferred: ");
+                    scanf("%s",det2.name);
+                    // Check if account exists
+                    int resp2 = logchk(det2.name, "ABC", &det2);
+                    if (resp2==-1)
+                    {
+                        printf("Account with name '%s' doesn't exist.\n",det2.name);
+                        break;
+                    }
+                    else if (resp2==1 && (accno2 != det2.acc_no))
+                    {
+                        printf("Receiver's account name and account number don't match.\n");
+                        break;
+                    }
+                    else if (resp2==1 && (accno2 == det.acc_no))
+                    {
+                        printf("You cannot transfer money to your own account.\n");
+                        break;
+                    }
+                    printf("Enter amount to be transferred: ");
+                    scanf("%f",&amount);
+                    char str1[100]="Transfer to account ", buff1[20];
+                    sprintf(buff1, "%ld", accno2);
+                    strcat(str1,buff1);
+                    char str2[100]="Transfer from account ", buff2[20];
+                    sprintf(buff2, "%ld", det.acc_no);
+                    strcat(str2,buff2);
+                    if (withdraw(det.name, amount, str1)==0 && deposit(det2.name, amount, str2)==0)
+                    {
+                        printf("Money transferred successfully!\n");
+                    }
+                    else
+                    {
+                        printf("Transaction failed!\n");
+                    }
+                    break;
                 default:
                     log = 0;
                     printf("Logged out!\n");
                     break;
             }
+            printf("%s",border);
         }
     }
     return 0;
