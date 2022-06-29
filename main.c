@@ -3,6 +3,17 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define NRM  "\x1B[0m"
+#define BOLD "\x1B[1m"
+#define BLK  "\x1B[30m"
+#define RED  "\x1B[31m"
+#define GRN  "\x1B[32m"
+#define YEL  "\x1B[33m"
+#define BLU  "\x1B[34m"
+#define MAG  "\x1B[35m"
+#define CYN  "\x1B[36m"
+#define WHT  "\x1B[37m"
+
 struct details
 {
     long int acc_no;
@@ -27,6 +38,14 @@ void cur_time(char *ts)
     ptr = gmtime(&t);
     strftime(ts,100,"%d-%m-%Y-%H:%M:%S",ptr);
     // printf("%s\n",ts);
+}
+
+float float_rand( float min, float max )
+{
+    srand(time(0));
+    rand(); // Empty call to remove related values.
+    float scale = rand() / (float) RAND_MAX; /* [0, 1.0] */
+    return min + scale * ( max - min );
 }
 
 int gettrans(char uname[], struct trans *tar)
@@ -141,20 +160,23 @@ int login(struct details *det)
     for (i1;i1<3;i1++) //Three chances for wrong password.
     {
         printf("\nEnter username: ");
+        printf(YEL);
         scanf("%s",usrn);
+        printf(NRM);
         printf("\nEnter password: ");
+        printf(BLK);
         scanf("%s",pass);
+        printf(NRM);
         int status;
         status = logchk(usrn, pass, det);
         if (status == 0){//Verifying step
-            printf("\nSuccess!");
             return 0;
         }
         else if (status == 1)
-        printf("Wrong password!\n");
+        printf(RED"Wrong password!\n"NRM);
         else
         {
-            printf("Account with name '%s' doesn't exist. Sign-Up to create one!\n",usrn);
+            printf(RED"Account with name '%s' doesn't exist. Sign-Up to create one!\n"NRM,usrn);
             return -1;
         }
     }
@@ -199,31 +221,35 @@ void sign_up ()
 
 int main()
 {
-    printf("=============== Welcome to N.P. Banking Services ===============");
+    char border[] = "===================================================================================\n";
+    printf(MAG"%s"NRM,border);
+    printf(MAG BOLD"======================== Welcome to N.P. Banking Services =========================\n" NRM);
+    printf(MAG"%s"NRM,border);
     int flag=1,log=0;
     struct details det;
-    char border[] = "=======================================================================================\n";
     while (flag)
     {
-        printf("\n1. Log-In\n2. Sign-Up\n3. Exit\nEnter your choice(integer only): ");
+        printf(CYN"\n1. Log-In\n2. Sign-Up\n3. Exit\nEnter your choice(integer only): " NRM);
         int ch1;
+        printf(YEL);
         scanf("%d",&ch1);
+        printf(NRM);
         switch (ch1)
         {
         case 1:
-            printf("Log-In\n");
+            printf(BOLD MAG"================================ Log-In ===========================================\n"NRM);
             int resp1;
             resp1 = login(&det);
             if (resp1==0)
             {
                 log = 1;
-                printf("Successfully logged in!\n");
-                printf("=============================== Welcome %s ======================================\n",det.name);
+                printf(GRN"Successfully logged in!\n"NRM);
+                printf(BOLD MAG"=============================== Welcome %s ======================================\n"NRM,det.name);
             }
             break;
         case 2:
             printf("Sign-Up\n");
-            sign_up();
+            sign_up();//
             break;
         default:
             flag=0;
@@ -232,18 +258,21 @@ int main()
         }
         while (log==1)
         {
-            printf("\n1. Check your account balance\n2. View your transactions\n3. Money Transfer\n4. Exit\nEnter your choice(integer only): ");
+            printf(CYN"\n1. Check your account balance\n2. View your transactions\n3. Money Transfer\n4. Crypto Invest\n5. Exit\nEnter your choice(integer only): "NRM);
             int ch2=0;
             int arsz; // Array Size
             struct trans tar[100];
             float amount; // Transaction amount for money transfer
 
+            printf(YEL);
             scanf("%d",&ch2);
+            printf(NRM);
             char line[] = "---------------------------------------------------------------------------------------\n";
             switch(ch2)
             {
                 case 1:
-                    printf("Your balance is: %.2f Rupees\n",balance(det.name));
+                    printf(GRN"\nYour account balance is:");
+                    printf(YEL" %.2f Rupees Only\n"NRM,balance(det.name));
                     break;
                 case 2:
                     arsz = gettrans(det.name, tar);
@@ -297,6 +326,65 @@ int main()
                     else
                     {
                         printf("Transaction failed!\n");
+                    }
+                    break;
+                case 4:
+                    printf("===================== CRYPTO INVEST ====================\n");
+                    printf("Enter amount to be invested: ");
+                    scanf("%f",&amount);
+                    printf(CYN"Choose in which currency you want to invest: \n1. Bitcoin \n2. Ethereum \n3. Litecoin \n4. Ripple \n5. Back\nEnter your choice(integer only): "NRM);                    
+                    printf(YEL);
+                    int ch3;
+                    scanf("%d",&ch3);
+                    printf(NRM);
+                    char desc[50]="Investment in ";
+                    switch (ch3)
+                    {
+                        case 1:
+                            strcat(desc,"Bitcoin");
+                            break;
+                        case 2:
+                            strcat(desc,"Ethereum");
+                            break;
+                        case 3:
+                            strcat(desc,"Litecoin");
+                            break;
+                        case 4:
+                            strcat(desc,"Ripple");
+                            break;
+                        case 5:
+                            break;
+                        default:
+                            printf("Invalid choice!\n");
+                            break;
+                    }
+                    //exit(0);
+                    if (withdraw(det.name, amount, desc)==0)
+                    {
+                        printf("Investment successful!\n");
+                    }
+                    else
+                    {
+                        printf("Investment failed!\n");
+                        break;
+                    }
+                    float rate = float_rand(-15,15);
+                    if (rate<0)
+                    {
+                        printf("%s has plummeted by %.2f%%!\n",desc,rate);
+                    }
+                    else
+                    {
+                        printf("%s has soared by %.2f%%!\n",desc,rate);
+                    }
+                    amount = amount + (amount*rate/100);
+                    if (deposit(det.name, amount, "Investment Returns")==0)
+                    {
+                        printf("Amount deposited successfully!\n");
+                    }
+                    else
+                    {
+                        printf("Depositing failed!\n");
                     }
                     break;
                 default:
