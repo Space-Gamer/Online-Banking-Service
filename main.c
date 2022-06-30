@@ -326,6 +326,17 @@ int main()
                     printf(YEL);
                     scanf("%f",&amount);
                     printf(NRM);
+                    printf("Enter password to confirm: ");
+                    printf(BLK);
+                    char passwd[50];
+                    scanf("%s",&passwd);
+                    printf(NRM);
+                    if (strcmp(passwd, det.passwd)!=0)
+                    {
+                        printf(RED"Wrong password\n"NRM);
+                        printf(RED"Transaction failed!\n"NRM);
+                        break;
+                    }
                     char str1[100]="Transfer to account ", buff1[20];
                     sprintf(buff1, "%ld", accno2);
                     strcat(str1,buff1);
@@ -334,11 +345,11 @@ int main()
                     strcat(str2,buff2);
                     if (withdraw(det.name, amount, str1)==0 && deposit(det2.name, amount, str2)==0)
                     {
-                        printf(GRN"Money transferred successfully!\n"NRM);
+                        printf(GRN"\nMoney transferred successfully!\n"NRM);
                     }
                     else
                     {
-                        printf(RED"Transaction failed!\n"NRM);
+                        printf(RED"\nTransaction failed!\n"NRM);
                     }
                     break;
                 case 4:
