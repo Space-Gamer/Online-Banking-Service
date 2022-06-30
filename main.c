@@ -3,6 +3,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
+
 #define NRM  "\x1B[0m"
 #define BOLD "\x1B[1m"
 #define BLK  "\x1B[30m"
@@ -40,12 +46,22 @@ void cur_time(char *ts)
     // printf("%s\n",ts);
 }
 
-float float_rand( float min, float max )
+float float_rand(float min, float max)
 {
     srand(time(0));
     rand(); // Empty call to remove related values.
     float scale = rand() / (float) RAND_MAX; /* [0, 1.0] */
     return min + scale * ( max - min );
+}
+
+void sleep(float sec)
+{
+    sec*=1000;
+    #ifdef _WIN32
+    Sleep(sec);
+    #else
+    usleep(sec*1000);
+    #endif
 }
 
 int gettrans(char uname[], struct trans *tar)
@@ -290,6 +306,7 @@ int main()
                     for (it=0;it<arsz;it++)
                     {
                         printf("|%4ld | %19s | %30s | %10.2f | %10.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
+                        sleep(0.01);
                     }
                     printf("%s",line);
                     break;
@@ -364,6 +381,7 @@ int main()
                     scanf("%d",&ch3);
                     printf(NRM);
                     char desc[50]="Investment in ";
+                    int resp3=1;
                     switch (ch3)
                     {
                         case 1:
@@ -379,10 +397,16 @@ int main()
                             strcat(desc,"Ripple");
                             break;
                         case 5:
+                            resp3=0;
                             break;
                         default:
+                            resp3=0;
                             printf(RED"Invalid choice!\n"NRM);
                             break;
+                    }
+                    if (resp3==0)
+                    {
+                        break;
                     }
                     printf("%s",line);
                     if (withdraw(det.name, amount, desc)==0)
@@ -394,6 +418,7 @@ int main()
                         printf(RED"Investment failed!\n"NRM);
                         break;
                     }
+                    sleep(2);
                     float rate = float_rand(-15,15);
                     if (rate<0)
                     {
