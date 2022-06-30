@@ -59,7 +59,7 @@ int gettrans(char uname[], struct trans *tar)
     FILE *fptr;
     char fname[] = "";
     strcat(fname,uname);
-    strcat(fname,"_trs.txt");
+    strcat(fname,"_trs.csv");
     fptr = fopen(fname, "r");
     fseek(fptr, -3, SEEK_END);
     int ctr,ltr; //Current, Last transcation number
@@ -95,7 +95,7 @@ int withdraw(char uname[], float amt, char desc[])
     FILE *fptr;
     char fname[50] = "";
     strcat(fname,uname);
-    strcat(fname,"_trs.txt");
+    strcat(fname,"_trs.csv");
     fptr = fopen(fname, "a+");
     fseek(fptr, -3, SEEK_END);
     int ltr; //Current, Last transcation number
@@ -113,7 +113,7 @@ int deposit(char uname[], float amt, char desc[])
     FILE *fptr;
     char fname[50] = "";
     strcat(fname,uname);
-    strcat(fname,"_trs.txt");
+    strcat(fname,"_trs.csv");
     fptr = fopen(fname, "a+");
     fseek(fptr, -3, SEEK_END);
     int ltr; //Current, Last transcation number
@@ -130,7 +130,7 @@ int logchk(char *usr, char *pass, struct details *det)
 {
     FILE *fptr;
     long int acc_no;
-    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","r");
+    fptr = fopen("acc_data.csv","r");
     fseek(fptr, -7, SEEK_END);
     fscanf(fptr,"%ld", &acc_no);//Last non-existent account number
     long int a;//Current account number
@@ -190,7 +190,7 @@ void sign_up ()
 {
     struct details u1;
     FILE *fptr,*fptr2;
-    fptr = fopen("D:\\Programming\\C-Project-Sem-2\\acc_data.txt","a+");
+    fptr = fopen("acc_data.csv","a+");
     fseek(fptr, -7, SEEK_END); //Read next account number
     fscanf(fptr,"%ld", &u1.acc_no);
     printf("Enter your name: ");
@@ -215,7 +215,7 @@ void sign_up ()
     printf("%ld\n",u1.acc_no);
     char fname[110]="";
     strcat(fname,u1.name);
-    strcat(fname,"_trs.txt");
+    strcat(fname,"_trs.csv");
     fptr2 = fopen(fname,"a+");
     fprintf(fptr2, "001,%s,Initial Deposit,10000,10000\n002",dstr);//TRID,date_string,Desc,Transaction_amt,Balance
     fclose(fptr);
