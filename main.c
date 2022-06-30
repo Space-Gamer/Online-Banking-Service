@@ -44,7 +44,7 @@ float float_rand(float min, float max)
     return min + scale * ( max - min );
 }
 
-void sleep(float sec)
+void slep(float sec)
 {
     sec*=1000;
     #ifdef _WIN32
@@ -282,7 +282,7 @@ int main()
                     for (it=0;it<arsz;it++)
                     {
                         printf("|%4ld | %19s | %30s | %10.2f | %10.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
-                        sleep(0.01);
+                        slep(0.01);
                     }
                     printf("%s",line);
                     break;
@@ -385,7 +385,7 @@ int main()
                         printf("Investment failed!\n");
                         break;
                     }
-                    sleep(2);
+                    slep(2);
                     float rate = float_rand(-15,15);
                     if (rate<0)
                     {
