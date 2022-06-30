@@ -163,7 +163,7 @@ int login(struct details *det)
 { //fn1
     int i1=0;
     char usrn[100],pass[100];
-    for (i1;i1<3;i1++) //Three chances for wrong password.
+    for (;i1<3;i1++) //Three chances for wrong password.
     {
         printf("\nEnter username: ");
         scanf("%s",usrn);
@@ -192,13 +192,13 @@ void sign_up ()
     FILE *fptr,*fptr2;
     fptr = fopen("acc_data.csv","a+");
     fseek(fptr, -7, SEEK_END); //Read next account number
-    fscanf(fptr,"%ld", &u1.acc_no);
+    fscanf(fptr,"%ld", u1.acc_no);
     printf("Enter your name: ");
-    scanf("%s",&u1.name);
+    scanf("%s",u1.name);
     printf("Enter your email address: ");
-    scanf("%s",&u1.email);
+    scanf("%s",u1.email);
     printf("Enter password: ");
-    scanf("%s",&u1.passwd);
+    scanf("%s",u1.passwd);
     int stat;
     stat = logchk(u1.name, u1.passwd, &u1);
     if (!(stat==-1))
@@ -281,7 +281,7 @@ int main()
                     printf("%s",line);
                     for (it=0;it<arsz;it++)
                     {
-                        printf("|%4ld | %19s | %30s | %10.2f | %10.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
+                        printf("|%4d | %19s | %30s | %10.2f | %10.2f|\n",tar[it].trno, tar[it].tstr, tar[it].desc, tar[it].tramt, tar[it].bal);
                         slep(0.01);
                     }
                     printf("%s",line);
@@ -316,7 +316,7 @@ int main()
                     scanf("%f",&amount);
                     printf("Enter password to confirm: ");
                     char passwd[50];
-                    scanf("%s",&passwd);
+                    scanf("%s",passwd);
                     
                     if (strcmp(passwd, det.passwd)!=0)
                     {
