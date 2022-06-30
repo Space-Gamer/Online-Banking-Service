@@ -83,7 +83,7 @@ int withdraw(char uname[], float amt, char desc[])
     float bal = balance(uname);
     if (bal<amt)
     {
-        printf("Insufficient balance in your account!\n");
+        printf(RED"Insufficient balance in your account!\n"NRM);
         return -1;
     }
     FILE *fptr;
@@ -173,14 +173,14 @@ int login(struct details *det)
             return 0;
         }
         else if (status == 1)
-        printf(RED"Wrong password!\n"NRM);
+        printf(RED"\nWrong password!\n"NRM);
         else
         {
             printf(RED"Account with name '%s' doesn't exist. Sign-Up to create one!\n"NRM,usrn);
             return -1;
         }
     }
-    printf("Too many invalid attempts. Try again later!\n");
+    printf(RED"Too many invalid attempts. Try again later!\n"NRM);
     return -1;
 }
 
@@ -192,24 +192,31 @@ void sign_up ()
     fseek(fptr, -7, SEEK_END); //Read next account number
     fscanf(fptr,"%ld", &u1.acc_no);
     printf("Enter your name: ");
+    printf(YEL);
     scanf("%s",&u1.name);
+    printf(NRM);
     printf("Enter your email address: ");
+    printf(YEL);
     scanf("%s",&u1.email);
+    printf(NRM);
     printf("Enter password: ");
-    scanf("%s",&u1.passwd); //Re-enter passwd if needed
+    printf(BLK);
+    scanf("%s",&u1.passwd);
+    printf(NRM);
     int stat;
     stat = logchk(u1.name, u1.passwd, &u1);
     if (!(stat==-1))
     {
-        printf("Username '%s' already exists! Kindly login to access.\n",u1.name);
+        printf(RED"Username '%s' already exists! Kindly login to access.\n"NRM,u1.name);
         fclose(fptr);
         return;
     }
     char dstr[100]="";
     cur_time(dstr);
     fprintf(fptr, ",%s,%s,%s\n%ld", u1.name, u1.email, u1.passwd, u1.acc_no+1);//Append data to file.
-    printf("Account created successfully!\n");
-    printf("Your account number is: %ld\n",u1.acc_no);
+    printf(GRN"Account created successfully!\n"NRM);
+    printf("Your account number is: ");
+    printf(YEL"%ld\n"NRM,u1.acc_no);
     char fname[110]="";
     strcat(fname,u1.name);
     strcat(fname,"_trs.txt");
@@ -248,12 +255,12 @@ int main()
             }
             break;
         case 2:
-            printf("Sign-Up\n");
+            printf(BOLD MAG"================================ Sign-Up ===========================================\n"NRM);
             sign_up();//
             break;
         default:
             flag=0;
-            printf("Thank you for using our service. Good Day!");
+            printf(BOLD BLU"\nThank you for using our service. Good Day!"NRM);
             break;
         }
         while (log==1)
@@ -287,32 +294,38 @@ int main()
                     printf("%s",line);
                     break;
                 case 3:
-                    printf("===================== MONEY TRANSFER ====================\n");
+                    printf(BOLD MAG"===================== MONEY TRANSFER ====================\n"NRM);
                     struct details det2;
                     long int accno2;
                     printf("Enter account number to which amount must be transferred: ");
+                    printf(YEL);
                     scanf("%ld",&accno2);
+                    printf(NRM);
                     printf("Enter name of account to which amount must be transferred: ");
+                    printf(YEL);
                     scanf("%s",det2.name);
+                    printf(NRM);
                     // Check if account exists
                     int resp2 = logchk(det2.name, "ABC", &det2);
                     if (resp2==-1)
                     {
-                        printf("Account with name '%s' doesn't exist.\n",det2.name);
+                        printf(RED"Account with name '%s' doesn't exist.\n"NRM,det2.name);
                         break;
                     }
                     else if (resp2==1 && (accno2 != det2.acc_no))
                     {
-                        printf("Receiver's account name and account number don't match.\n");
+                        printf(RED"Receiver's account name and account number don't match.\n"NRM);
                         break;
                     }
                     else if (resp2==1 && (accno2 == det.acc_no))
                     {
-                        printf("You cannot transfer money to your own account.\n");
+                        printf(YEL"You cannot transfer money to your own account.\n"NRM);
                         break;
                     }
                     printf("Enter amount to be transferred: ");
+                    printf(YEL);
                     scanf("%f",&amount);
+                    printf(NRM);
                     char str1[100]="Transfer to account ", buff1[20];
                     sprintf(buff1, "%ld", accno2);
                     strcat(str1,buff1);
@@ -321,17 +334,19 @@ int main()
                     strcat(str2,buff2);
                     if (withdraw(det.name, amount, str1)==0 && deposit(det2.name, amount, str2)==0)
                     {
-                        printf("Money transferred successfully!\n");
+                        printf(GRN"Money transferred successfully!\n"NRM);
                     }
                     else
                     {
-                        printf("Transaction failed!\n");
+                        printf(RED"Transaction failed!\n"NRM);
                     }
                     break;
                 case 4:
-                    printf("===================== CRYPTO INVEST ====================\n");
+                    printf(BOLD MAG"===================== CRYPTO INVEST ====================\n"NRM);
                     printf("Enter amount to be invested: ");
+                    printf(YEL);
                     scanf("%f",&amount);
+                    printf(NRM);
                     printf(CYN"Choose in which currency you want to invest: \n1. Bitcoin \n2. Ethereum \n3. Litecoin \n4. Ripple \n5. Back\nEnter your choice(integer only): "NRM);                    
                     printf(YEL);
                     int ch3;
@@ -355,41 +370,41 @@ int main()
                         case 5:
                             break;
                         default:
-                            printf("Invalid choice!\n");
+                            printf(RED"Invalid choice!\n"NRM);
                             break;
                     }
-                    //exit(0);
+                    printf("%s",line);
                     if (withdraw(det.name, amount, desc)==0)
                     {
-                        printf("Investment successful!\n");
+                        printf(GRN"Investment successful!\n"NRM);
                     }
                     else
                     {
-                        printf("Investment failed!\n");
+                        printf(RED"Investment failed!\n"NRM);
                         break;
                     }
                     float rate = float_rand(-15,15);
                     if (rate<0)
                     {
-                        printf("%s has plummeted by %.2f%%!\n",desc,rate);
+                        printf(BOLD YEL"\n%s has plummeted by %.2f%%!\n\n"NRM,desc,rate);
                     }
                     else
                     {
-                        printf("%s has soared by %.2f%%!\n",desc,rate);
+                        printf(BOLD GRN"\n%s has soared by %.2f%%!\n\n"NRM,desc,rate);
                     }
                     amount = amount + (amount*rate/100);
                     if (deposit(det.name, amount, "Investment Returns")==0)
                     {
-                        printf("Amount deposited successfully!\n");
+                        printf(GRN"Returns deposited successfully!\n"NRM);
                     }
                     else
                     {
-                        printf("Depositing failed!\n");
+                        printf(RED"Depositing failed!\n"NRM);
                     }
                     break;
                 default:
                     log = 0;
-                    printf("Logged out!\n");
+                    printf(YEL"\nLogged out!\n"NRM);
                     break;
             }
             printf("%s",border);
